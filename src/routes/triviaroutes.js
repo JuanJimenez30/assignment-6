@@ -1,11 +1,8 @@
 const express = require('express');
+const triviaController = require('../controllers/triviaController');
 
 const router = express.Router();
 
-router.get('/test', (req, res) => {
-    res.json({
-        message: 'Trivia route is working'
-    });
-});
+router.get('/topics', triviaController.getTopics);
 
 module.exports = router;
