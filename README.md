@@ -234,7 +234,7 @@ The application uses a model-controller-router architecture:
 
 ## Deployment
 
-The application will be deployed using Render.
+The application is deployed using Render.
 
 ### Render Configuration
 
@@ -254,10 +254,8 @@ The `DATABASE_URL` environment variable must be configured in Render using the N
 
 ### Deployed API URL
 
-Add the Render deployment URL here after deployment:
-
 ```text
-YOUR_RENDER_DEPLOYED_API_URL
+https://assignment-6-5syz.onrender.com
 ```
 
 ## Testing
