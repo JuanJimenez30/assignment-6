@@ -14,6 +14,115 @@ async function getTopics(req, res) {
     }
 }
 
+async function getQuestionsByTopic(req, res) {
+    try {
+        const { topic } = req.params;
+        const { difficulty, limit } = req.query;
+
+        const validDifficulties = ['easy', 'medium', 'hard'];
+
+        if (difficulty && !validDifficulties.includes(difficulty.toLowerCase())) {
+            return res.status(400).json({
+                error: 'Difficulty must be easy, medium, or hard'
+            });
+        }
+
+        const topicExists = await triviaModel.topicExists(topic);
+
+        if (!topicExists) {
+            return res.status(404).json({
+                error: `Topic '${topic}' not found`
+            });
+        }
+
+        let parsedLimit;
+
+        if (limit !== undefined) {
+            parsedLimit = Number(limit);
+
+            if (!Number.isInteger(parsedLimit) || parsedLimit <= 0) {
+                return res.status(400).json({
+                    error: 'Limit must be a positive integer'
+                });
+            }
+        }
+
+        const questions = await triviaModel.getQuestionsByTopic(
+            topic,
+            difficulty ? difficulty.toLowerCase() : undefined,
+            parsedLimit
+        );
+
+        res.json(questions);
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            error: 'Failed to retrieve questions'
+        });
+    }
+}
+
+async function getRandomQuestion(req, res) {
+    try {
+        const question = await triviaModel.getRandomQuestion();
+
+        if (!question) {
+            return res.status(404).json({
+                error: 'No questions found'
+            });
+        }
+
+        res.json(question);
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            error: 'Failed to retrieve random question'
+        });
+    }
+}
+
+async function checkAnswer(req, res) {
+    try {
+        const { id, guess } = req.body;
+
+        if (id === undefined || guess === undefined) {
+            return res.status(400).json({
+                error: 'Question id and guess are required'
+            });
+        }
+
+        const question = await triviaModel.getQuestionAnswer(id);
+
+        if (!question) {
+            return res.status(404).json({
+                error: `Question with id ${id} not found`
+            });
+        }
+
+        const correctAnswer = question.answer.trim();
+        const userGuess = String(guess).trim();
+
+        const correct =
+            userGuess.toLowerCase() === correctAnswer.toLowerCase();
+
+        res.json({
+            correct,
+            answer: correctAnswer
+        });
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            error: 'Failed to check answer'
+        });
+    }
+}
+
 module.exports = {
-    getTopics
+    getTopics,
+    getQuestionsByTopic,
+    getRandomQuestion,
+    checkAnswer
 };
