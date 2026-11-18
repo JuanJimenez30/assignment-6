@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 
-const triviaRoutes = require('./src/routes/triviaroutes');
+const triviaRoutes = require('./src/routes/triviaRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
