@@ -120,9 +120,51 @@ async function checkAnswer(req, res) {
     }
 }
 
+async function addQuestion(req, res) {
+    try {
+        const { topic, question, answer, difficulty } = req.body;
+
+        // Check for missing fields
+        if (!topic || !question || !answer || !difficulty) {
+            return res.status(400).json({
+                error: 'Topic, question, answer, and difficulty are required'
+            });
+        }
+
+        // Check that difficulty is valid
+        const validDifficulties = ['easy', 'medium', 'hard'];
+
+        if (!validDifficulties.includes(difficulty.toLowerCase())) {
+            return res.status(400).json({
+                error: 'Difficulty must be easy, medium, or hard'
+            });
+        }
+
+        // Add the question
+        await triviaModel.addQuestion(
+            topic,
+            question,
+            answer,
+            difficulty.toLowerCase()
+        );
+
+        // Get the updated list of questions for this topic
+        const questions = await triviaModel.getQuestionsByTopic(topic);
+
+        res.status(201).json(questions);
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            error: 'Failed to add question'
+        });
+    }
+}
+
 module.exports = {
     getTopics,
     getQuestionsByTopic,
     getRandomQuestion,
-    checkAnswer
+    checkAnswer,
+    addQuestion
 };
