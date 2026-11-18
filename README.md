@@ -241,7 +241,7 @@ The application will be deployed using Render.
 **Build command:**
 
 ```text
-npm install express pg
+npm install
 ```
 
 **Start command:**
